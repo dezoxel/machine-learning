@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Plotly Line Chart Example</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+  </head>
+
+  <body>
+    <input type="number" id="w-input" value="1" placeholder="w" />
+    <input type="number" id="b-input" value="1" placeholder="b" />
+    <div id="myPlot" style="width: 100%; max-width: 700px; height: 400px"></div>
+
+    <script>
+      // Shared libs: BEGIN
+      function buildUrl(path, host) {
+        const url = new URL(path, host);
+
+        return url;
+      }
+
+      function buildUrlWithQueryString(path, host, params) {
+        const searchParams = new URLSearchParams(params);
+
+        const url = buildUrl(path, host);
+
+        url.search = searchParams.toString();
+
+        return url;
+      }
+
+      const handleNonOkResponse = (response) => {
+        if (!response.ok) {
+          throw new Error("Network response was not ok " + response.statusText);
+        }
+        return response.json();
+      };
+
+      const handleError = (error) => {
+        console.error(
+          "There has been a problem with your fetch operation:",
+          error
+        );
+      };
+
+      function getInputValue(id) {
+        const inputElement = document.getElementById(id);
+        if (inputElement && inputElement.value) {
+          return parseFloat(inputElement.value);
+        }
+        return null;
+      }
+      // Shared lib: END
+
+      // API layer: BEGIN
+      const getTrainingSetEndpoint = (host) => {
+        const trainingSetPath = "/linear-regression/training-set";
+
+        const url = buildUrl(trainingSetPath, host);
+
+        return url;
+      };
+
+      const getPredictionsByFeaturesEndpoint = (host, w, b) => {
+        const params = { w, b };
+        const predictionsByFeaturesPath =
+          "/linear-regression/predictions-by-features";
+
+        const url = buildUrlWithQueryString(
+          predictionsByFeaturesPath,
+          host,
+          params
+        );
+
+        return url;
+      };
+      // API layer: END
+
+      // UI layer: BEGIN
+      const plotLinearRegression = (trainingSet, predictedTargets) => {
+        const trainingSetPoints = {
+          name: "Training Set",
+          x: trainingSet.features,
+          y: trainingSet.targets,
+          mode: "markers",
+          type: "scatter",
+          marker: {
+            color: "red",
+            symbol: "x",
+          },
+        };
+
+        const predictionLinePoints = {
+          name: "Prediction",
+          x: trainingSet.features,
+          y: predictedTargets,
+          mode: "lines",
+          type: "scatter",
+          marker: {
+            color: "blue",
+            symbol: "x",
+          },
+        };
+
+        const data = [trainingSetPoints, predictionLinePoints];
+
+        const layout = {
+          title: "Linear Regression",
+          xaxis: { title: "X Axis" },
+          yaxis: { title: "Y Axis" },
+        };
+
+        Plotly.newPlot("myPlot", data, layout);
+      };
+      // UI layer: END
+
+      // App layer: BEGIN
+      const linearRegressionApp = (config) => {
+        const { w, b, host } = config;
+
+        const trainingSetEndpoint = getTrainingSetEndpoint(host);
+
+        const predictionsByFeaturesEndpoint = getPredictionsByFeaturesEndpoint(
+          host,
+          w,
+          b
+        );
+
+        Promise.all([
+          fetch(trainingSetEndpoint.href),
+          fetch(predictionsByFeaturesEndpoint.href),
+        ])
+          .then((responses) => Promise.all(responses.map(handleNonOkResponse)))
+          .then(([trainingSet, predictionsByFeatures]) => {
+            plotLinearRegression(
+              trainingSet,
+              predictionsByFeatures.predictions
+            );
+          })
+          .catch(handleError);
+      };
+
+      const runApp = () => {
+        const host = "http://localhost:3000";
+        const w = getInputValue("w-input");
+        const b = getInputValue("b-input");
+
+        const config = { w, b, host };
+        linearRegressionApp(config);
+      };
+      // App layer: END
+
+      // Entry point: BEGIN
+      function main() {
+        document.getElementById("w-input").addEventListener("input", runApp);
+        document.getElementById("b-input").addEventListener("input", runApp);
+
+        runApp();
+      }
+
+      main();
+      // Entry point: END
+    </script>
+  </body>
+</html>
