@@ -1,4 +1,4 @@
-import { TrainingSet } from "./training-set.types";
+import { TrainingSet } from "./training-set.types.infrastructure";
 
 const trainingSetFeatures = [0, 1, 3];
 const trainingSetTargets = [1, 3, 7];
