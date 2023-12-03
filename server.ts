@@ -1,6 +1,6 @@
 import cors from 'cors';
 import express, { NextFunction, Request, Response } from 'express';
-import { linearRegressionPredictionsByFeaturesEndpoint, linearRegressionTrainingSetEndpoint } from './linear-regression/endpoints.application';
+import { linear_regression_cost_function_by_wb_endpoint, linear_regression_cost_function_by_wb_range_endpoint, linear_regression_predictions_by_features_endpoint, linear_regression_training_set_endpoint } from './linear-regression/endpoints.application';
 
 const app = express();
 const port = 3000;
@@ -17,21 +17,21 @@ export interface ApiError {
   description?: string;
 }
 
-const globalErrorHandler = () => (err: any, req: Request, res: Response, next: NextFunction) => {
+const global_error_handler = () => (err: any, req: Request, res: Response, next: NextFunction) => {
   const errorResponse: ApiError = {
-    error: err.message || 'InternalServerError',
+    error: err.message || 'Internal server error',
     code: err.statusCode || 500,
     description: err.description || 'An unexpected error occurred',
   };
   res.status(errorResponse.code).json(errorResponse);
 }
 
-app.use(globalErrorHandler());
+app.use(global_error_handler());
 
-
-app.get(linearRegressionTrainingSetEndpoint.name, linearRegressionTrainingSetEndpoint.handler);
-
-app.get(linearRegressionPredictionsByFeaturesEndpoint.name, linearRegressionPredictionsByFeaturesEndpoint.handler);
+app.get(linear_regression_training_set_endpoint.name, linear_regression_training_set_endpoint.handler);
+app.get(linear_regression_predictions_by_features_endpoint.name, linear_regression_predictions_by_features_endpoint.handler);
+app.get(linear_regression_cost_function_by_wb_range_endpoint.name, linear_regression_cost_function_by_wb_range_endpoint.handler);
+app.get(linear_regression_cost_function_by_wb_endpoint.name, linear_regression_cost_function_by_wb_endpoint.handler);
 
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}/`);

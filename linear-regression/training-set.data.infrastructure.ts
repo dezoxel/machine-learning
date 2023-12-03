@@ -1,7 +1,9 @@
 import { TrainingSet } from "./training-set.types.infrastructure";
 
-const trainingSetFeatures = [0, 1, 3];
-const trainingSetTargets = [1, 3, 7];
+// w = 2, b = 0
+// TODO: make configurable thru UI
+const trainingSetFeatures = [0, 1, 2];
+const trainingSetTargets = [0, 1, 2];
 
 const trainingSet: TrainingSet = {
     features: trainingSetFeatures,

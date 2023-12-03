@@ -3,81 +3,143 @@
   <head>
     <title>Plotly Line Chart Example</title>
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <style>
+      .container {
+        display: flex;
+        justify-content: space-between;
+      }
+
+      #linear_regression {
+        width: 100%;
+        max-width: 700px;
+        height: 400px;
+      }
+
+      #linear_regression_cost_function_fixed_b {
+        width: 100%;
+        max-width: 700px;
+        height: 400px;
+      }
+
+      #linear_regression_cost_function_fixed_w {
+        width: 100%;
+        max-width: 700px;
+        height: 400px;
+      }
+
+      #linear_regression_cost_function_3d {
+        width: 100%;
+        max-width: 700px;
+        height: 800px;
+      }
+    </style>
   </head>
 
   <body>
-    <input type="number" id="w-input" value="1" placeholder="w" />
-    <input type="number" id="b-input" value="1" placeholder="b" />
-    <div id="myPlot" style="width: 100%; max-width: 700px; height: 400px"></div>
+    <div class="container">
+      <div id="linear_regression"></div>
+      <div id="linear_regression_cost_function_fixed_w"></div>
+      <div id="linear_regression_cost_function_fixed_b"></div>
+    </div>
+    <div class="container">
+      w:
+      <input type="number" id="w-input" value="1" placeholder="w" step="0.25" />
+      b:
+      <input type="number" id="b-input" value="0" placeholder="b" step="0.25" />
+    </div>
+    <div class="container">
+      <div id="linear_regression_cost_function_3d"></div>
+    </div>
 
     <script>
       // Shared libs: BEGIN
-      function buildUrl(path, host) {
+      function build_url(path, host) {
         const url = new URL(path, host);
 
         return url;
       }
 
-      function buildUrlWithQueryString(path, host, params) {
-        const searchParams = new URLSearchParams(params);
+      function build_url_with_query_string(path, host, params) {
+        const search_params = new URLSearchParams(params);
 
-        const url = buildUrl(path, host);
+        const url = build_url(path, host);
 
-        url.search = searchParams.toString();
+        url.search = search_params.toString();
 
         return url;
       }
 
-      const handleNonOkResponse = (response) => {
+      const handle_non_ok_response = (response) => {
         if (!response.ok) {
           throw new Error("Network response was not ok " + response.statusText);
         }
         return response.json();
       };
 
-      const handleError = (error) => {
+      const handle_error = (error) => {
         console.error(
           "There has been a problem with your fetch operation:",
           error
         );
       };
 
-      function getInputValue(id) {
-        const inputElement = document.getElementById(id);
-        if (inputElement && inputElement.value) {
-          return parseFloat(inputElement.value);
+      function get_input_value(id) {
+        const input_element = document.getElementById(id);
+        if (input_element && input_element.value) {
+          return parseFloat(input_element.value);
         }
         return null;
+      }
+
+      function get_matrix_col(matrix, col_index) {
+        return matrix.map((row) => row[col_index]);
+      }
+
+      function get_matrix_row(matrix, row_index) {
+        return matrix[row_index];
       }
       // Shared lib: END
 
       // API layer: BEGIN
-      const getTrainingSetEndpoint = (host) => {
-        const trainingSetPath = "/linear-regression/training-set";
+      const get_training_set_endpoint = (host) => {
+        const path = "/linear-regression/training-set";
 
-        const url = buildUrl(trainingSetPath, host);
+        const url = build_url(path, host);
 
         return url;
       };
 
-      const getPredictionsByFeaturesEndpoint = (host, w, b) => {
+      const get_predictions_by_features_endpoint = (host, w, b) => {
         const params = { w, b };
-        const predictionsByFeaturesPath =
-          "/linear-regression/predictions-by-features";
+        const path = "/linear-regression/predictions-by-features";
 
-        const url = buildUrlWithQueryString(
-          predictionsByFeaturesPath,
-          host,
-          params
-        );
+        const url = build_url_with_query_string(path, host, params);
+
+        return url;
+      };
+
+      const get_cost_function_by_wb_range_endpoint = (host, w, b) => {
+        const params = { w, b };
+        const path = "/linear-regression/cost-function-by-wb-range";
+
+        const url = build_url_with_query_string(path, host, params);
+
+        return url;
+      };
+
+      const get_cost_function_by_wb_endpoint = (host, w, b) => {
+        const params = { w, b };
+        const path = "/linear-regression/cost-function-by-wb";
+
+        const url = build_url_with_query_string(path, host, params);
 
         return url;
       };
       // API layer: END
 
       // UI layer: BEGIN
-      const plotLinearRegression = (trainingSet, predictedTargets) => {
-        const trainingSetPoints = {
+      const plot_linear_regression = (trainingSet, predictedTargets) => {
+        const training_set_points = {
           name: "Training Set",
           x: trainingSet.features,
           y: trainingSet.targets,
@@ -89,7 +151,7 @@
           },
         };
 
-        const predictionLinePoints = {
+        const prediction_points = {
           name: "Prediction",
           x: trainingSet.features,
           y: predictedTargets,
@@ -101,51 +163,333 @@
           },
         };
 
-        const data = [trainingSetPoints, predictionLinePoints];
+        const data = [training_set_points, prediction_points];
 
         const layout = {
           title: "Linear Regression",
           xaxis: { title: "X Axis" },
-          yaxis: { title: "Y Axis" },
+          yaxis: { title: "Y Axis", scaleanchor: "x", scaleratio: 1 },
         };
 
-        Plotly.newPlot("myPlot", data, layout);
+        Plotly.newPlot("linear_regression", data, layout);
       };
+
+      const plot_linear_regression_cost_function_fixed_w = (
+        w,
+        cost_function_sample_range,
+        actual_cost
+      ) => {
+        const w_row_index = cost_function_sample_range.w.indexOf(w);
+
+        // TODO: add validations so that this issues is not possible
+        if (!w_row_index) {
+          throw new Error("w_row_index is not found");
+        }
+
+        const J_fixed_w = get_matrix_row(
+          cost_function_sample_range.J,
+          w_row_index
+        );
+
+        // TODO: add validations so that this issues is not possible
+        if (!J_fixed_w || J_fixed_w.length === 0) {
+          throw new Error("J_fixed_w is not found");
+        }
+
+        const cost_function_points = {
+          name: "Cost Function",
+          x: cost_function_sample_range.b,
+          y: J_fixed_w,
+          mode: "lines",
+          type: "scatter",
+          marker: {
+            color: "green",
+            symbol: "x",
+          },
+        };
+
+        const actual_cost_points = {
+          name: "Actual Cost",
+          x: [actual_cost.b],
+          y: [actual_cost.J],
+          mode: "markers",
+          type: "scatter",
+          marker: {
+            color: "blue",
+            symbol: "x",
+          },
+        };
+
+        const data = [cost_function_points, actual_cost_points];
+
+        const layout = {
+          title: "Cost Function (fixed w)",
+          xaxis: { title: "b" },
+          yaxis: { title: "J", scaleanchor: "x", scaleratio: 1 },
+        };
+
+        Plotly.newPlot("linear_regression_cost_function_fixed_w", data, layout);
+      };
+
+      const plot_linear_regression_cost_function_fixed_b = (
+        b,
+        cost_function_sample_range,
+        actual_cost
+      ) => {
+        const b_col_index = cost_function_sample_range.b.indexOf(b);
+
+        // TODO: add validations so that this issues is not possible
+        if (!b_col_index) {
+          throw new Error("b_col_index is not found");
+        }
+
+        const J_fixed_b = get_matrix_col(
+          cost_function_sample_range.J,
+          b_col_index
+        );
+
+        // TODO: add validations so that this issues is not possible
+        if (!J_fixed_b || J_fixed_b.length === 0) {
+          throw new Error("J_fixed_b is not found");
+        }
+
+        const cost_function_points = {
+          name: "Cost Function",
+          x: cost_function_sample_range.w,
+          y: J_fixed_b,
+          mode: "lines",
+          type: "scatter",
+          marker: {
+            color: "green",
+            symbol: "x",
+          },
+        };
+
+        const actual_cost_points = {
+          name: "Actual Cost",
+          x: [actual_cost.w],
+          y: [actual_cost.J],
+          mode: "markers",
+          type: "scatter",
+          marker: {
+            color: "blue",
+            symbol: "x",
+          },
+        };
+
+        const data = [cost_function_points, actual_cost_points];
+
+        const layout = {
+          title: "Cost Function (fixed b)",
+          xaxis: { title: "w" },
+          yaxis: { title: "J", scaleanchor: "x", scaleratio: 1 },
+        };
+
+        Plotly.newPlot("linear_regression_cost_function_fixed_b", data, layout);
+      };
+
+      const plot_linear_regression_cost_function_3d = (
+        cost_function_sample_range,
+        actual_cost
+      ) => {
+        const w_list = cost_function_sample_range.w;
+        const b_list = cost_function_sample_range.b;
+
+        const w_length = w_list.length;
+        const b_length = b_list.length;
+
+        const w = w_list
+          .map((w) => {
+            const arr = Array(b_length).fill(w);
+            return arr;
+          })
+          .flat();
+
+        const b = Array(w_length)
+          .fill(0)
+          .map(() => cost_function_sample_range.b)
+          .flat();
+        const J = cost_function_sample_range.J.flat();
+
+        const cost_function_points = {
+          name: "Cost Function",
+          x: w,
+          y: b,
+          z: J,
+          mode: "markers",
+          type: "scatter3d",
+          marker: {
+            color: "green",
+            size: 3
+          },
+        };
+
+        const actual_cost_points = {
+          name: "Actual Cost",
+          x: [actual_cost.w],
+          y: [actual_cost.b],
+          z: [actual_cost.J],
+          mode: "markers",
+          type: "scatter3d",
+          marker: {
+            color: "blue",
+          },
+        };
+
+        const data = [cost_function_points, actual_cost_points];
+
+        const layout = {
+          title: "Cost Function",
+          scene: {
+            xaxis: { title: "w" },
+            yaxis: { title: "b", scaleanchor: "x", scaleratio: 1 },
+            zaxis: { title: "J", scaleanchor: "x", scaleratio: 1 },
+            camera: {
+              // eye: { x: 1.25, y: 1.25, z: 1.25 }, // Adjust these values to change the perspective
+              eye: { x: -1.25, y: 1.25, z: 1.25 }, // Adjust these values to change the perspective
+              up: { x: 0, y: 0, z: 1 }, // Usually, Z is up
+              center: { x: 0, y: 0, z: 0 }, // Center of the scene
+            },
+          },
+        };
+
+        Plotly.newPlot("linear_regression_cost_function_3d", data, layout);
+      };
+
+      const plot_linear_regression_cost_function_3d_wrong = (
+        cost_function_sample_range,
+        actual_cost
+      ) => {
+        const w_list = cost_function_sample_range.w;
+        const b_list = cost_function_sample_range.b;
+        const J = cost_function_sample_range.J;
+
+        console.log("w_list", w_list);
+        console.log("b_list", b_list);
+        console.log("J", J);
+        console.log("actual_cost", actual_cost);
+
+        const cost_function_surface = {
+          name: "Cost Function",
+          z: J,
+          x: w_list,
+          y: b_list,
+          type: "surface",
+          // contours: {
+          //   z: {
+          //     show: true,
+          //     usecolormap: true,
+          //     highlightcolor: "#42f462",
+          //     project: { z: true },
+          //   },
+          // },
+          // colorscale: "Viridis",
+        };
+
+        // Create a marker for the actual cost point
+        const actual_cost_marker = {
+          name: "Actual Cost",
+          x: [actual_cost.w],
+          y: [actual_cost.b],
+          z: [actual_cost.J],
+          mode: "markers",
+          type: "scatter3d",
+          marker: {
+            color: "red",
+            size: 10,
+            symbol: "circle",
+          },
+        };
+
+        const data = [cost_function_surface, actual_cost_marker];
+
+        const layout = {
+          title: "Cost Function Surface",
+          scene: {
+            xaxis: { title: "w" },
+            yaxis: { title: "b" },
+            zaxis: { title: "J" },
+          },
+          autosize: true,
+        };
+
+        Plotly.newPlot("linear_regression_cost_function_3d", data, layout);
+      };
+
       // UI layer: END
 
       // App layer: BEGIN
-      const linearRegressionApp = (config) => {
+      const linear_regression_app = (config) => {
         const { w, b, host } = config;
 
-        const trainingSetEndpoint = getTrainingSetEndpoint(host);
+        const training_set_endpoint = get_training_set_endpoint(host);
 
-        const predictionsByFeaturesEndpoint = getPredictionsByFeaturesEndpoint(
+        const predictions_by_features_endpoint =
+          get_predictions_by_features_endpoint(host, w, b);
+
+        const cost_function_by_wb_range_endpoint =
+          get_cost_function_by_wb_range_endpoint(
+            host,
+            // TODO: it should be configured via UI
+            [w],
+            [b]
+          );
+
+        const cost_function_by_wb_endpoint = get_cost_function_by_wb_endpoint(
           host,
           w,
           b
         );
 
         Promise.all([
-          fetch(trainingSetEndpoint.href),
-          fetch(predictionsByFeaturesEndpoint.href),
+          fetch(training_set_endpoint.href),
+          fetch(predictions_by_features_endpoint.href),
+          fetch(cost_function_by_wb_range_endpoint.href),
+          fetch(cost_function_by_wb_endpoint.href),
         ])
-          .then((responses) => Promise.all(responses.map(handleNonOkResponse)))
-          .then(([trainingSet, predictionsByFeatures]) => {
-            plotLinearRegression(
-              trainingSet,
-              predictionsByFeatures.predictions
-            );
-          })
-          .catch(handleError);
+          .then((responses) =>
+            Promise.all(responses.map(handle_non_ok_response))
+          )
+          .then(
+            ([
+              training_set,
+              predictions_by_features,
+              cost_function_sample_range,
+              actual_cost,
+            ]) => {
+              plot_linear_regression(
+                training_set,
+                predictions_by_features.predictions
+              );
+
+              plot_linear_regression_cost_function_fixed_w(
+                w,
+                cost_function_sample_range,
+                actual_cost
+              );
+
+              plot_linear_regression_cost_function_fixed_b(
+                b,
+                cost_function_sample_range,
+                actual_cost
+              );
+
+              plot_linear_regression_cost_function_3d(
+                cost_function_sample_range,
+                actual_cost
+              );
+            }
+          )
+          .catch(handle_error);
       };
 
       const runApp = () => {
         const host = "http://localhost:3000";
-        const w = getInputValue("w-input");
-        const b = getInputValue("b-input");
+        const w = get_input_value("w-input");
+        const b = get_input_value("b-input");
 
         const config = { w, b, host };
-        linearRegressionApp(config);
+        linear_regression_app(config);
       };
       // App layer: END
 
