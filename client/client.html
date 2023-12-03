@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Plotly Line Chart Example</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script src="./shared_libs.js"></script>
+    <script src="./api.js"></script>
+    <script src="./linear_regression.chart.ui.js"></script>
+    <script src="./cost_function_fixed_b.chart.ui.js"></script>
+    <script src="./cost_function_fixed_w.chart.ui.js"></script>
+    <script src="./cost_function_3d.chart.ui.js"></script>
+    <script src="./linear_regression.application.js"></script>
+    <style>
+      .container {
+        display: flex;
+        justify-content: space-between;
+      }
+
+      #linear_regression {
+        width: 100%;
+        max-width: 700px;
+        height: 400px;
+      }
+
+      #linear_regression_cost_function_fixed_b {
+        width: 100%;
+        max-width: 700px;
+        height: 400px;
+      }
+
+      #linear_regression_cost_function_fixed_w {
+        width: 100%;
+        max-width: 700px;
+        height: 400px;
+      }
+
+      #linear_regression_cost_function_3d {
+        width: 100%;
+        max-width: 700px;
+        height: 800px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="container">
+      <div id="linear_regression"></div>
+      <div id="linear_regression_cost_function_fixed_w"></div>
+      <div id="linear_regression_cost_function_fixed_b"></div>
+    </div>
+    <div class="container">
+      w:
+      <input type="number" id="w-input" value="1" placeholder="w" step="0.25" />
+      b:
+      <input type="number" id="b-input" value="0" placeholder="b" step="0.25" />
+    </div>
+    <div class="container">
+      <div id="linear_regression_cost_function_3d"></div>
+    </div>
+
+    <script>
+      // App layer: BEGIN
+      const runApp = () => {
+        const host = "http://localhost:3000";
+        const w = get_input_value("w-input");
+        const b = get_input_value("b-input");
+
+        const config = { w, b, host };
+        linear_regression_app(config);
+      };
+      // App layer: END
+
+      // Entry point: BEGIN
+      function main() {
+        document.getElementById("w-input").addEventListener("input", runApp);
+        document.getElementById("b-input").addEventListener("input", runApp);
+
+        runApp();
+      }
+
+      main();
+      // Entry point: END
+    </script>
+  </body>
+</html>
