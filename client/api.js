@@ -15,8 +15,8 @@ const get_predictions_by_features_endpoint = (host, w, b) => {
     return url;
 };
 
-const get_cost_function_by_wb_range_endpoint = (host, w, b) => {
-    const params = { w, b };
+const get_cost_function_by_wb_range_endpoint = (host, w_begin, w_end, w_step, b_begin, b_end, b_step) => {
+    const params = { w_begin, w_end, w_step, b_begin, b_end, b_step };
     const path = "/linear-regression/cost-function-by-wb-range";
 
     const url = build_url_with_query_string(path, host, params);

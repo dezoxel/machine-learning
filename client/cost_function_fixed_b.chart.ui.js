@@ -1,28 +1,36 @@
+const calculate_J_for_fixed_b = (b, b_vector, J_matrix) => {
+  const b_col_index = b_vector.indexOf(b);
+
+  if (!b_col_index) {
+      throw new Error(`Unable to find value the specified "b": ${b}. ` +
+          `Please ensure that the "b" value is present in the cost function "b" vector.`);
+  }
+
+  const J_fixed_b = get_matrix_col(J_matrix, b_col_index);
+
+  if (!b_col_index || b_col_index.length === 0) {
+      throw new Error(`Unable to find "J" vector for the specified for "b": ${b}. ` +
+          `Please ensure that "J" matrix is consistent with "b" vector.`);
+  }
+
+  return J_fixed_b;
+};
+
+
 const plot_linear_regression_cost_function_fixed_b = (
+  chartId,
   b,
-  cost_function_sample_range,
+  cost_function_points,
   actual_cost
 ) => {
-  const b_col_index = cost_function_sample_range.b.indexOf(b);
 
-  // TODO: add validations so that this issues is not possible
-  if (!b_col_index) {
-    throw new Error("b_col_index is not found");
-  }
+  const {w: w_vector, b: b_vector, J: J_matrix} = cost_function_points;
 
-  const J_fixed_b = get_matrix_col(
-    cost_function_sample_range.J,
-    b_col_index
-  );
+  const J_fixed_b = calculate_J_for_fixed_b(b, b_vector, J_matrix);
 
-  // TODO: add validations so that this issues is not possible
-  if (!J_fixed_b || J_fixed_b.length === 0) {
-    throw new Error("J_fixed_b is not found");
-  }
-
-  const cost_function_points = {
+  const cost_function_chart_data = {
     name: "Cost Function",
-    x: cost_function_sample_range.w,
+    x: w_vector,
     y: J_fixed_b,
     mode: "lines",
     type: "scatter",
@@ -32,7 +40,7 @@ const plot_linear_regression_cost_function_fixed_b = (
     },
   };
 
-  const actual_cost_points = {
+  const actual_cost_chart_data = {
     name: "Actual Cost",
     x: [actual_cost.w],
     y: [actual_cost.J],
@@ -44,7 +52,7 @@ const plot_linear_regression_cost_function_fixed_b = (
     },
   };
 
-  const data = [cost_function_points, actual_cost_points];
+  const data = [cost_function_chart_data, actual_cost_chart_data];
 
   const layout = {
     title: "Cost Function (fixed b)",
@@ -52,5 +60,5 @@ const plot_linear_regression_cost_function_fixed_b = (
     yaxis: { title: "J", scaleanchor: "x", scaleratio: 1 },
   };
 
-  Plotly.newPlot("linear_regression_cost_function_fixed_b", data, layout);
+  Plotly.newPlot(chartId, data, layout);
 };

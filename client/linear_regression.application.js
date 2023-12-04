@@ -1,5 +1,5 @@
 const linear_regression_app = (config) => {
-    const { w, b, host } = config;
+    const { w, b, w_begin, w_end, w_step, b_begin, b_end, b_step, host } = config;
 
     const training_set_endpoint = get_training_set_endpoint(host);
 
@@ -9,9 +9,7 @@ const linear_regression_app = (config) => {
     const cost_function_by_wb_range_endpoint =
         get_cost_function_by_wb_range_endpoint(
             host,
-            // TODO: it should be configured via UI
-            [w],
-            [b]
+            w_begin, w_end, w_step, b_begin, b_end, b_step
         );
 
     const cost_function_by_wb_endpoint = get_cost_function_by_wb_endpoint(
@@ -37,23 +35,27 @@ const linear_regression_app = (config) => {
                 actual_cost,
             ]) => {
                 plot_linear_regression(
+                    "linear_regression",
                     training_set,
                     predictions_by_features.predictions
                 );
 
                 plot_linear_regression_cost_function_fixed_w(
+                    "linear_regression_cost_function_fixed_w",
                     w,
                     cost_function_sample_range,
                     actual_cost
                 );
 
                 plot_linear_regression_cost_function_fixed_b(
+                    "linear_regression_cost_function_fixed_b",
                     b,
                     cost_function_sample_range,
                     actual_cost
                 );
 
                 plot_linear_regression_cost_function_3d(
+                    "linear_regression_cost_function_3d",
                     cost_function_sample_range,
                     actual_cost
                 );

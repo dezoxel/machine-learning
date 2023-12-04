@@ -58,6 +58,14 @@ export const linear_regression_predictions_by_features_endpoint = {
 
 };
 
+export interface Cost_Function_By_WB_Range_Query_Params {
+    w_begin: string;
+    w_end: string;
+    w_step: string;
+    b_begin: string;
+    b_end: string;
+    b_step: string;
+}
 export interface Cost_Function_By_WB_Range_Response {
     w: number[];
     b: number[];
@@ -65,19 +73,33 @@ export interface Cost_Function_By_WB_Range_Response {
 }
 export const linear_regression_cost_function_by_wb_range_endpoint = {
     name: '/linear-regression/cost-function-by-wb-range',
-    handler: async (req: Request, res: Response<Cost_Function_By_WB_Range_Response>, next: NextFunction) => {
+    handler: async (req: Request<{}, {}, {}, Cost_Function_By_WB_Range_Query_Params>, res: Response<Cost_Function_By_WB_Range_Response>, next: NextFunction) => {
         try {
             const { features: x, targets: y } = await getTrainingSet();
 
+            if (!req.query.w_begin || !req.query.w_end || !req.query.w_step) {
+                throw new Error('Missing query params: w_begin, w_end, or w_step');
+            }
+
+            if (!req.query.b_begin || !req.query.b_end || !req.query.b_step) {
+                throw new Error('Missing query params: b_begin, b_end, or b_step');
+            }
+
+            const w_begin = parseFloat(req.query.w_begin); // default: -2
+            const w_end = parseFloat(req.query.w_end); // default: 4
+            const w_step = parseFloat(req.query.w_step); // default: 0.25
+
+            const b_begin = parseFloat(req.query.b_begin); // default: -3
+            const b_end = parseFloat(req.query.b_end); // default: 3
+            const b_step = parseFloat(req.query.b_step); // default: 0.25
+
             const sample_w_range: number[] = [];
-            // TODO: extract to config or API params
-            for (let w = -2; w <= 4; w += 0.25) {
+            for (let w = w_begin; w <= w_end; w += w_step) {
                 sample_w_range.push(w);
             }
 
             const sample_b_range: number[] = [];
-            // TODO: extract to config or API params
-            for (let b = -3; b <= 3; b += 0.25) {
+            for (let b = b_begin; b <= b_end; b += b_step) {
                 sample_b_range.push(b);
             }
 

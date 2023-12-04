@@ -1,25 +1,31 @@
+const calculateW = (w_list, b_length) => {
+    return w_list
+        .map(w => Array(b_length).fill(w))
+        .flat();
+};
+
+const calculateB = (b_list, w_length) => {
+    return Array(w_length)
+        .fill(0)
+        .map(() => b_list)
+        .flat();
+};
+
+const calculateJ = (J) => {
+    return J.flat();
+};
+
+
 const plot_linear_regression_cost_function_3d = (
+    chartId,
     cost_function_sample_range,
     actual_cost
 ) => {
-    const w_list = cost_function_sample_range.w;
-    const b_list = cost_function_sample_range.b;
+    const { w: w_list, b: b_list } = cost_function_sample_range;
 
-    const w_length = w_list.length;
-    const b_length = b_list.length;
-
-    const w = w_list
-        .map((w) => {
-            const arr = Array(b_length).fill(w);
-            return arr;
-        })
-        .flat();
-
-    const b = Array(w_length)
-        .fill(0)
-        .map(() => cost_function_sample_range.b)
-        .flat();
-    const J = cost_function_sample_range.J.flat();
+    const w = calculateW(w_list, b_list.length);
+    const b = calculateB(b_list, w_list.length);
+    const J = calculateJ(cost_function_sample_range.J);
 
     const cost_function_points = {
         name: "Cost Function",
@@ -55,13 +61,12 @@ const plot_linear_regression_cost_function_3d = (
             yaxis: { title: "b", scaleanchor: "x", scaleratio: 1 },
             zaxis: { title: "J", scaleanchor: "x", scaleratio: 1 },
             camera: {
-                // eye: { x: 1.25, y: 1.25, z: 1.25 }, // Adjust these values to change the perspective
-                eye: { x: -1.25, y: 1.25, z: 1.25 }, // Adjust these values to change the perspective
-                up: { x: 0, y: 0, z: 1 }, // Usually, Z is up
-                center: { x: 0, y: 0, z: 0 }, // Center of the scene
+                eye: { x: -1.25, y: 1.25, z: 1.25 },
+                up: { x: 0, y: 0, z: 1 },
+                center: { x: 0, y: 0, z: 0 },
             },
         },
     };
 
-    Plotly.newPlot("linear_regression_cost_function_3d", data, layout);
+    Plotly.newPlot(chartId, data, layout);
 };

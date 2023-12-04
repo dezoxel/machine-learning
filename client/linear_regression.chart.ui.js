@@ -1,4 +1,4 @@
-const plot_linear_regression = (trainingSet, predictedTargets) => {
+const plot_linear_regression = (chartId, trainingSet, predictedTargets) => {
     const training_set_points = {
         name: "Training Set",
         x: trainingSet.features,
@@ -31,5 +31,5 @@ const plot_linear_regression = (trainingSet, predictedTargets) => {
         yaxis: { title: "Y Axis", scaleanchor: "x", scaleratio: 1 },
     };
 
-    Plotly.newPlot("linear_regression", data, layout);
+    Plotly.newPlot(chartId, data, layout);
 };

@@ -44,6 +44,57 @@
 
   <body>
     <div class="container">
+      w_begin:
+      <input
+        type="number"
+        id="w-begin-input"
+        value="-2"
+        placeholder="w_begin"
+        step="0.25"
+      />
+      w_end:
+      <input
+        type="number"
+        id="w-end-input"
+        value="4"
+        placeholder="w_end"
+        step="0.25"
+      />
+      w_step:
+      <input
+        type="number"
+        id="w-step-input"
+        value="0.25"
+        placeholder="w_step"
+        step="0.25"
+      />
+
+      b_begin:
+      <input
+        type="number"
+        id="b-begin-input"
+        value="-2"
+        placeholder="b_begin"
+        step="0.25"
+      />
+      b_end:
+      <input
+        type="number"
+        id="b-end-input"
+        value="4"
+        placeholder="b_end"
+        step="0.25"
+      />
+      b_step:
+      <input
+        type="number"
+        id="b-step-input"
+        value="0.25"
+        placeholder="b_step"
+        step="0.25"
+      />
+    </div>
+    <div class="container">
       <div id="linear_regression"></div>
       <div id="linear_regression_cost_function_fixed_w"></div>
       <div id="linear_regression_cost_function_fixed_b"></div>
@@ -62,10 +113,29 @@
       // App layer: BEGIN
       const runApp = () => {
         const host = "http://localhost:3000";
+
+        const w_begin = get_input_value("w-begin-input");
+        const w_end = get_input_value("w-end-input");
+        const w_step = get_input_value("w-step-input");
+
+        const b_begin = get_input_value("b-begin-input");
+        const b_end = get_input_value("b-end-input");
+        const b_step = get_input_value("b-step-input");
+
         const w = get_input_value("w-input");
         const b = get_input_value("b-input");
 
-        const config = { w, b, host };
+        const config = {
+          w,
+          b,
+          w_begin,
+          w_end,
+          w_step,
+          b_begin,
+          b_end,
+          b_step,
+          host,
+        };
         linear_regression_app(config);
       };
       // App layer: END
@@ -74,6 +144,12 @@
       function main() {
         document.getElementById("w-input").addEventListener("input", runApp);
         document.getElementById("b-input").addEventListener("input", runApp);
+        document.getElementById("w-begin-input").addEventListener("input", runApp);
+        document.getElementById("w-end-input").addEventListener("input", runApp);
+        document.getElementById("w-step-input").addEventListener("input", runApp);
+        document.getElementById("b-begin-input").addEventListener("input", runApp);
+        document.getElementById("b-end-input").addEventListener("input", runApp);
+        document.getElementById("b-step-input").addEventListener("input", runApp);
 
         runApp();
       }
