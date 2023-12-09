@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
-import { meanSquaredErrorForLinearRegression, linear_regression_model } from './model.domain';
+import { mean_squared_error_cost_function, linear_regression_model, calc_cost_function_for_linear_regression_by_range, create_vector_from_range } from './model.domain';
 import { getTrainingSet } from './training-set.data.infrastructure';
 
 
@@ -93,34 +93,18 @@ export const linear_regression_cost_function_by_wb_range_endpoint = {
             const b_end = parseFloat(req.query.b_end); // default: 3
             const b_step = parseFloat(req.query.b_step); // default: 0.25
 
-            const sample_w_range: number[] = [];
-            for (let w = w_begin; w <= w_end; w += w_step) {
-                sample_w_range.push(w);
-            }
+            const w_vector = create_vector_from_range(w_begin, w_end, w_step);
+            const b_vector = create_vector_from_range(b_begin, b_end, b_step);
 
-            const sample_b_range: number[] = [];
-            for (let b = b_begin; b <= b_end; b += b_step) {
-                sample_b_range.push(b);
-            }
+            const cost_function_values = calc_cost_function_for_linear_regression_by_range(w_vector, b_vector)(x, y);
 
-            const sampleCostFunction = sample_w_range.map((w) => {
-
-                const J_fixed_w = sample_b_range.map((b) => {
-                    const J_wb = meanSquaredErrorForLinearRegression(w, b);
-                    const J_wb_x = J_wb(x, y);
-                    return Number(J_wb_x.toPrecision(2));
-                });
-
-                return J_fixed_w;
-            });
-
-            const costFunction = {
-                w: sample_w_range,
-                b: sample_b_range,
-                J: sampleCostFunction,
+            const cost_function_surface = {
+                w: w_vector,
+                b: b_vector,
+                J: cost_function_values,
             };
 
-            res.json(costFunction);
+            res.json(cost_function_surface);
         } catch (e) {
             next(e);
         }
@@ -149,7 +133,7 @@ export const linear_regression_cost_function_by_wb_endpoint = {
             const w = parseFloat(req.query.w);
             const b = parseFloat(req.query.b);
 
-            const J_wb = meanSquaredErrorForLinearRegression(w, b);
+            const J_wb = mean_squared_error_cost_function(w, b);
             const J_wb_x = J_wb(x, y);
 
             const costFunction = {
