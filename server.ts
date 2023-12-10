@@ -1,6 +1,7 @@
 import cors from 'cors';
 import express, { NextFunction, Request, Response } from 'express';
-import { linear_regression_cost_function_by_wb_endpoint, linear_regression_cost_function_by_wb_range_endpoint, linear_regression_predictions_by_features_endpoint, linear_regression_training_set_endpoint } from './linear-regression/endpoints.application';
+
+import { linear_regression_routes } from './linear-regression/routes.application';
 
 const app = express();
 const port = 3000;
@@ -28,10 +29,7 @@ const global_error_handler = () => (err: any, req: Request, res: Response, next:
 
 app.use(global_error_handler());
 
-app.get(linear_regression_training_set_endpoint.name, linear_regression_training_set_endpoint.handler);
-app.get(linear_regression_predictions_by_features_endpoint.name, linear_regression_predictions_by_features_endpoint.handler);
-app.get(linear_regression_cost_function_by_wb_range_endpoint.name, linear_regression_cost_function_by_wb_range_endpoint.handler);
-app.get(linear_regression_cost_function_by_wb_endpoint.name, linear_regression_cost_function_by_wb_endpoint.handler);
+app.use('/linear-regression', linear_regression_routes);
 
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}/`);

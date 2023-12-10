@@ -28,10 +28,20 @@ const handle_error = (error) => {
     );
 };
 
-function get_input_value(id) {
+// TODO: throw an error if not found
+function get_number_input_value(id) {
     const input_element = document.getElementById(id);
     if (input_element && input_element.value) {
         return parseFloat(input_element.value);
+    }
+    return null;
+}
+
+// TODO: throw an error if not found
+function get_string_input_value(id) {
+    const input_element = document.getElementById(id);
+    if (input_element && input_element.value) {
+        return input_element.value;
     }
     return null;
 }

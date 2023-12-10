@@ -1,5 +1,5 @@
 const linear_regression_app = (config) => {
-    const { w, b, w_begin, w_end, w_step, b_begin, b_end, b_step, host } = config;
+    const { host, w, b, w_begin, w_end, w_step, b_begin, b_end, b_step, cost_function_name } = config;
 
     const training_set_endpoint = get_training_set_endpoint(host);
 
@@ -9,13 +9,15 @@ const linear_regression_app = (config) => {
     const cost_function_by_wb_range_endpoint =
         get_cost_function_by_wb_range_endpoint(
             host,
-            w_begin, w_end, w_step, b_begin, b_end, b_step
+            w_begin, w_end, w_step, b_begin, b_end, b_step,
+            cost_function_name
         );
 
     const cost_function_by_wb_endpoint = get_cost_function_by_wb_endpoint(
         host,
         w,
-        b
+        b,
+        cost_function_name
     );
 
     Promise.all([
