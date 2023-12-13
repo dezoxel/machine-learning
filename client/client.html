@@ -8,6 +8,7 @@
     <script src="./linear_regression.chart.ui.js"></script>
     <script src="./cost_function_fixed_b.chart.ui.js"></script>
     <script src="./cost_function_fixed_w.chart.ui.js"></script>
+    <script src="./cost_by_iteration.chart.ui.js"></script>
     <script src="./cost_function_3d.chart.ui.js"></script>
     <script src="./linear_regression.application.js"></script>
     <style>
@@ -45,25 +46,61 @@
   <body>
     <div class="container">
       w_begin:
-      <input type="number" id="w_begin_input" value="-2" placeholder="w_begin" step="0.25" />
+      <input
+        type="number"
+        id="w_begin_input"
+        value="0"
+        placeholder="w_begin"
+        step="10"
+      />
       w_end:
-      <input type="number" id="w_end_input" value="4" placeholder="w_end" step="0.25" />
+      <input
+        type="number"
+        id="w_end_input"
+        value="400"
+        placeholder="w_end"
+        step="10"
+      />
       w_step:
-      <input type="number" id="w_step_input" value="0.25" placeholder="w_step" step="0.25" />
+      <input
+        type="number"
+        id="w_step_input"
+        value="10"
+        placeholder="w_step"
+        step="10"
+      />
 
       b_begin:
-      <input type="number" id="b_begin_input" value="-2" placeholder="b_begin" step="0.25" />
+      <input
+        type="number"
+        id="b_begin_input"
+        value="0"
+        placeholder="b_begin"
+        step="10"
+      />
       b_end:
-      <input type="number" id="b_end_input" value="4" placeholder="b_end" step="0.25" />
+      <input
+        type="number"
+        id="b_end_input"
+        value="400"
+        placeholder="b_end"
+        step="10"
+      />
       b_step:
-      <input type="number" id="b_step_input" value="0.25" placeholder="b_step" step="0.25" />
+      <input
+        type="number"
+        id="b_step_input"
+        value="10"
+        placeholder="b_step"
+        step="10"
+      />
     </div>
 
     <div class="container">
       <label for="w_input">w:</label>
-      <input type="number" id="w_input" value="1" placeholder="w" step="0.25" />
+      <input type="number" id="w_input" value="200" placeholder="w" step="10" />
       <label for="b_input">b:</label>
-      <input type="number" id="b_input" value="0" placeholder="b" step="0.25" />
+      <input type="number" id="b_input" value="100" placeholder="b" step="10" />
 
       <label for="cost_function_name">Cost Function:</label>
       <select name="cost_function_name" id="cost_function_name">
@@ -80,6 +117,70 @@
     <div class="container">
       <div id="linear_regression_cost_function_fixed_w"></div>
       <div id="linear_regression_cost_function_fixed_b"></div>
+    </div>
+
+    <div class="container">
+      <div>
+        <button id="linear_regression_train">Train</button>
+      </div>
+      <div>
+        <label for="linear_regression_train_max_iterations"
+          >max_iterations:</label
+        >
+        <input
+          type="number"
+          id="linear_regression_train_max_iterations"
+          value="10000"
+          placeholder="max_iterations"
+        />
+      </div>
+
+      <div>
+        <label for="linear_regression_train_initial_w">initial_w:</label>
+        <input
+          type="number"
+          id="linear_regression_train_initial_w"
+          value="0"
+          placeholder="initial_w"
+        />
+      </div>
+
+      <div>
+        <label for="linear_regression_train_initial_b">initial_b:</label>
+        <input
+          type="number"
+          id="linear_regression_train_initial_b"
+          value="0"
+          placeholder="initial_b"
+        />
+      </div>
+
+      <div>
+        <label for="linear_regression_train_learning_rate"
+          >learning_rate:</label
+        >
+        <input
+          type="number"
+          id="linear_regression_train_learning_rate"
+          value="0.01"
+          placeholder="learning_rate"
+        />
+      </div>
+
+      <div>
+        <label for="linear_regression_train_b">Trained cost:</label>
+        <input
+          type="number"
+          id="linear_regression_train_cost"
+          value="0"
+          placeholder="trained_cost"
+        />
+      </div>
+    </div>
+
+    <div class="container">
+      <div id="linear_regression_cost_by_iteration_begin"></div>
+      <div id="linear_regression_cost_by_iteration_end"></div>
     </div>
 
     <script>
@@ -118,6 +219,38 @@
         };
         linear_regression_app(config);
       };
+
+      const runTrainApp = () => {
+        const host = "http://localhost:3000";
+
+        const cost_function_name = get_string_input_value("cost_function_name");
+
+        // train
+        const max_iterations = get_number_input_value(
+          "linear_regression_train_max_iterations"
+        );
+        const learning_rate = get_number_input_value(
+          "linear_regression_train_learning_rate"
+        );
+        const initial_w = get_number_input_value(
+          "linear_regression_train_initial_w"
+        );
+        const initial_b = get_number_input_value(
+          "linear_regression_train_initial_b"
+        );
+
+        const config = {
+          host,
+
+          cost_function_name,
+
+          max_iterations,
+          learning_rate,
+          initial_w,
+          initial_b,
+        };
+        linear_regression_app_train(config);
+      };
       // App layer: END
 
       // Entry point: BEGIN
@@ -148,6 +281,10 @@
         document
           .getElementById("cost_function_name")
           .addEventListener("change", runApp);
+
+        document
+          .getElementById("linear_regression_train")
+          .addEventListener("click", runTrainApp);
 
         runApp();
       }

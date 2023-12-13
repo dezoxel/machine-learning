@@ -28,7 +28,8 @@ const plot_linear_regression = (chartId, trainingSet, predictedTargets) => {
     const layout = {
         title: "Linear Regression",
         xaxis: { title: "X Axis" },
-        yaxis: { title: "Y Axis", scaleanchor: "x", scaleratio: 1 },
+        // yaxis: { title: "Y Axis", scaleanchor: "x", scaleratio: 1 },
+        yaxis: { title: "Y Axis" },
     };
 
     Plotly.newPlot(chartId, data, layout);
