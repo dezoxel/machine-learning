@@ -50,10 +50,14 @@ export const gradient_descent_for_linear_regression = (suitable_J: number, max_i
 
         J = cost_function(linear_regression_model(w, b));
         J_history.push(J);
-        params_history.push([w, b]);
 
         if (i % 1000 === 0) {
             console.log(`Iteration ${i.toString().padStart(4, ' ')}: J = ${J.toExponential(2)}; w = ${w.toExponential(3)}, b = ${b.toExponential(5)}`);
+        }
+
+        if (i % 100 === 0) {
+            console.log(`Iteration ${i.toString().padStart(4, ' ')}: J = ${J.toExponential(2)}; w = ${w.toExponential(3)}, b = ${b.toExponential(5)}`);
+            params_history.push([w, b]);
         }
         i++;
     }

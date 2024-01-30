@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Plotly Line Chart Example</title>
+    <title>Linear Regression</title>
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <script src="./shared_libs.js"></script>
     <script src="./api.js"></script>
@@ -122,6 +122,8 @@
     <div class="container">
       <div>
         <button id="linear_regression_train">Train</button>
+        <button id="linear_regression_train_visualize">Visualize Train</button>
+        <button id="linear_regression_train_visualize_stop">Stop Visualization</button>
       </div>
       <div>
         <label for="linear_regression_train_max_iterations"
@@ -251,6 +253,13 @@
         };
         linear_regression_app_train(config);
       };
+
+      const runVisualizeTrainApp = () => {
+        linear_regression_app_visualize_train();
+      };
+      const runStopVisualizeTrainApp = () => {
+        linear_regression_app_visualize_train_stop();
+      };
       // App layer: END
 
       // Entry point: BEGIN
@@ -285,6 +294,14 @@
         document
           .getElementById("linear_regression_train")
           .addEventListener("click", runTrainApp);
+
+        document
+          .getElementById("linear_regression_train_visualize")
+          .addEventListener("click", runVisualizeTrainApp);
+
+        document
+          .getElementById("linear_regression_train_visualize_stop")
+          .addEventListener("click", runStopVisualizeTrainApp);
 
         runApp();
       }

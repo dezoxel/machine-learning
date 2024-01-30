@@ -1,3 +1,4 @@
+let params_history = [];
 const linear_regression_app_train = (config) => {
     const { host, cost_function_name, max_iterations, initial_w, initial_b, learning_rate } = config;
 
@@ -10,18 +11,12 @@ const linear_regression_app_train = (config) => {
 
     fetch(train_endpoint.href)
         .then(handle_non_ok_response)
-        .then(({ w, b, J, J_history, i }) => {
-            const w_input = document.getElementById("w_input");
-            w_input.value = w;
-            w_input.dispatchEvent(new Event("input", { bubbles: true }));
-
-            const b_input = document.getElementById("b_input");
-            b_input.value = b;
-            b_input.dispatchEvent(new Event("input", { bubbles: true }));
+        .then(({ J, J_history, i, params_history: h }) => {
+            params_history = h;
             document.getElementById("linear_regression_train_cost").value = J;
 
             // TODO: Extract to config?
-            const begin_range = [0, Math.floor(i * 0.01)];
+            const begin_range = [0, Math.floor(i * 0.05)];
             const end_range = [Math.floor(i * 0.3), i];
 
             plot_cost_by_iterations('linear_regression_cost_by_iteration_begin', J_history, begin_range, 'Cost by Iterations (begin)');
@@ -30,6 +25,33 @@ const linear_regression_app_train = (config) => {
         })
         .catch(handle_error);
 };
+
+let timerId = null;
+const linear_regression_app_visualize_train = () => {
+    const h = [...params_history];
+
+    timerId = setInterval(() => {
+        if (h.length === 0) {
+            clearTimeout(timerId);
+            return;
+        }
+
+        const [w, b] = h.shift();
+
+        const w_input = document.getElementById("w_input");
+        w_input.value = w;
+        w_input.dispatchEvent(new Event("input", { bubbles: true }));
+
+        const b_input = document.getElementById("b_input");
+        b_input.value = b;
+        b_input.dispatchEvent(new Event("input", { bubbles: true }));
+
+    }, 500);
+};
+
+const linear_regression_app_visualize_train_stop = () => {
+    clearTimeout(timerId);
+}
 
 const linear_regression_app = (config) => {
     const { host, w, b, w_begin, w_end, w_step, b_begin, b_end, b_step, cost_function_name } = config;
