@@ -1,4 +1,4 @@
-import { Cost_Function, mean_absolute_error, mean_squared_error } from "./cost_function.domain";
+import { Cost_Function, mean_absolute_error, mean_squared_error } from "../domain/cost_function";
 
 export const get_cost_function_by_name = (name: string): (x: number[], y: number[]) => Cost_Function => {
     switch (name) {

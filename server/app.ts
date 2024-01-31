@@ -1,7 +1,7 @@
 import cors from 'cors';
 import express from 'express';
 
-import { linear_regression_routes } from './linear-regression/univariate/routes.application';
+import { univariate_linear_regression_controller } from './linear-regression/univariate/application/linear-regression.controller';
 import { global_error_handler } from './platform/global-error-handler';
 import { status_endpoint_handler } from './platform/status-endpoint-handler';
 
@@ -14,7 +14,9 @@ app.get('/', status_endpoint_handler);
 
 app.use(global_error_handler());
 
-app.use('/linear-regression', linear_regression_routes);
+app.use('/linear-regression/univariate', univariate_linear_regression_controller);
+// TODO: Add routes for multivariate linear regression
+// app.use('/linear-regression/multiple', linear_regression_routes);
 
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}/`);

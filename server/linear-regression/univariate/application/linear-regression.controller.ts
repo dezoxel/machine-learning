@@ -1,20 +1,20 @@
 import { NextFunction, Request, Response, Router } from 'express';
-import { calc_cost_function_for_linear_regression_fixed_b, calc_cost_function_for_linear_regression_fixed_w, calc_cost_function_surface_for_linear_regression_by_range, calc_predictions_by_features } from './calc.domain';
-import { available_cost_functions } from './config';
-import { get_cost_function_by_name } from './cost_function.application';
-import { gradient_descent_for_linear_regression } from './gradient-descent';
-import { linear_regression_model } from './model.domain';
-import { getTrainingSet } from './training-set.data.infrastructure';
-import { get_number_from_query_string_factory, get_option_from_query_string_factory } from './validation.application';
+import { calc_cost_function_for_linear_regression_fixed_b, calc_cost_function_for_linear_regression_fixed_w, calc_cost_function_surface_for_linear_regression_by_range, calc_predictions_by_features } from '../domain/calc';
+import { available_cost_functions } from '../config';
+import { get_cost_function_by_name } from './cost_function.service';
+import { gradient_descent_for_linear_regression } from '../domain/gradient-descent';
+import { linear_regression_model } from '../domain/model';
+import { getTrainingSet } from '../infrastructure/training-set.data';
+import { get_number_from_query_string_factory, get_option_from_query_string_factory } from './validation.service';
 
-export const linear_regression_routes = Router();
+export const univariate_linear_regression_controller = Router();
 
 // -------------------------------------------------------------------------------- //
 export interface Training_Set_Response {
     features: number[];
     targets: number[];
 }
-linear_regression_routes.get('/training-set', async (_: Request, res: Response<Training_Set_Response>, next: NextFunction) => {
+univariate_linear_regression_controller.get('/training-set', async (_: Request, res: Response<Training_Set_Response>, next: NextFunction) => {
     try {
         const trainingSet = await getTrainingSet();
 
@@ -34,7 +34,7 @@ export interface Prediction_By_Features_Response {
     b: number;
     predictions: number[];
 }
-linear_regression_routes.get('/predictions-by-features', async (req: Request, res: Response<Prediction_By_Features_Response>, next: NextFunction) => {
+univariate_linear_regression_controller.get('/predictions-by-features', async (req: Request, res: Response<Prediction_By_Features_Response>, next: NextFunction) => {
     const get_number_from_query_string = get_number_from_query_string_factory<Prediction_By_Features_Query_Params>(req.query);
 
     try {
@@ -68,7 +68,7 @@ export interface Cost_Function_By_WB_Range_Response {
     b: number[];
     J: number[][];
 }
-linear_regression_routes.get('/cost-function-by-wb-range', async (req: Request, res: Response<Cost_Function_By_WB_Range_Response>, next: NextFunction) => {
+univariate_linear_regression_controller.get('/cost-function-by-wb-range', async (req: Request, res: Response<Cost_Function_By_WB_Range_Response>, next: NextFunction) => {
     const get_number_from_query_string = get_number_from_query_string_factory<Cost_Function_By_WB_Range_Query_Params>(req.query);
     const get_option_from_query_string = get_option_from_query_string_factory<Cost_Function_By_WB_Range_Query_Params>(req.query);
 
@@ -105,7 +105,7 @@ export interface Cost_Function_Range_Fixed_W_Response {
     b: number[];
     J: number[];
 }
-linear_regression_routes.get('/cost-function-range-fixed-w', async (req: Request, res: Response<Cost_Function_Range_Fixed_W_Response>, next: NextFunction) => {
+univariate_linear_regression_controller.get('/cost-function-range-fixed-w', async (req: Request, res: Response<Cost_Function_Range_Fixed_W_Response>, next: NextFunction) => {
     const get_number_from_query_string = get_number_from_query_string_factory<Cost_Function_Range_Fixed_W_Query_Params>(req.query);
     const get_option_from_query_string = get_option_from_query_string_factory<Cost_Function_Range_Fixed_W_Query_Params>(req.query);
 
@@ -140,7 +140,7 @@ export interface Cost_Function_Range_Fixed_B_Response {
     w: number[];
     J: number[];
 }
-linear_regression_routes.get('/cost-function-range-fixed-b', async (req: Request, res: Response<Cost_Function_Range_Fixed_B_Response>, next: NextFunction) => {
+univariate_linear_regression_controller.get('/cost-function-range-fixed-b', async (req: Request, res: Response<Cost_Function_Range_Fixed_B_Response>, next: NextFunction) => {
     const get_number_from_query_string = get_number_from_query_string_factory<Cost_Function_Range_Fixed_B_Query_Params>(req.query);
     const get_option_from_query_string = get_option_from_query_string_factory<Cost_Function_Range_Fixed_B_Query_Params>(req.query);
 
@@ -174,7 +174,7 @@ export interface Cost_Function_By_WB_Response {
     b: number;
     J: number;
 }
-linear_regression_routes.get('/cost-function-by-wb', async (req: Request, res: Response<Cost_Function_By_WB_Response>, next: NextFunction) => {
+univariate_linear_regression_controller.get('/cost-function-by-wb', async (req: Request, res: Response<Cost_Function_By_WB_Response>, next: NextFunction) => {
     const get_number_from_query_string = get_number_from_query_string_factory<Cost_Function_By_WB_Query_Params>(req.query);
     const get_option_from_query_string = get_option_from_query_string_factory<Cost_Function_By_WB_Query_Params>(req.query);
 
@@ -215,7 +215,7 @@ export interface Train_Response {
     J_history: number[];
     params_history: number[][];
 }
-linear_regression_routes.get('/train', async (req: Request, res: Response<Train_Response>, next: NextFunction) => {
+univariate_linear_regression_controller.get('/train', async (req: Request, res: Response<Train_Response>, next: NextFunction) => {
     const get_number_from_query_string = get_number_from_query_string_factory<Train_Query_Params>(req.query);
     const get_option_from_query_string = get_option_from_query_string_factory<Train_Query_Params>(req.query);
     try {

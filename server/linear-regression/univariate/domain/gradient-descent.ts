@@ -1,5 +1,5 @@
-import { Cost_Function } from "./cost_function.domain";
-import { linear_regression_model } from "./model.domain";
+import { Cost_Function } from "./cost_function";
+import { linear_regression_model } from "./model";
 
 export interface Gradient_Step_For_Linear_Regression {
     dj_dw: number;

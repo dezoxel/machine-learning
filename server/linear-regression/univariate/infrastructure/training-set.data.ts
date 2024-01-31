@@ -1,4 +1,4 @@
-import { TrainingSet } from "./training-set.types.infrastructure";
+import { TrainingSet } from "./training-set.types";
 
 // w = 2, b = 0
 // TODO: make configurable thru UI

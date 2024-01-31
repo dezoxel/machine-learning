@@ -1,7 +1,5 @@
-import { ApiError } from './global-error-handler';
-
 import { Request, Response, NextFunction } from 'express';
-
+import { ApiError } from './api.error';
 
 export const global_error_handler = () => (err: any, req: Request, res: Response, next: NextFunction) => {
   const errorResponse: ApiError = {
@@ -10,9 +8,4 @@ export const global_error_handler = () => (err: any, req: Request, res: Response
     description: err.description || 'An unexpected error occurred',
   };
   res.status(errorResponse.code).json(errorResponse);
-};export interface ApiError {
-  error: string;
-  code: number;
-  description?: string;
-}
-
+};

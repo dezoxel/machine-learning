@@ -1,4 +1,4 @@
-import { Model_Function } from "./model.domain";
+import { Model_Function } from "./model";
 
 export type Cost_Function = (model: Model_Function) => number;
 
