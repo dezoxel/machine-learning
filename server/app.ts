@@ -1,31 +1,16 @@
 import cors from 'cors';
-import express, { NextFunction, Request, Response } from 'express';
+import express from 'express';
 
 import { linear_regression_routes } from './linear-regression/univariate/routes.application';
+import { global_error_handler } from './platform/global-error-handler';
+import { status_endpoint_handler } from './platform/status-endpoint-handler';
 
 const app = express();
 const port = 3000;
 
 app.use(cors());
 
-app.get('/', (_: Request, res: Response) => {
-  res.json({ status: 'ok' });
-});
-
-export interface ApiError {
-  error: string;
-  code: number;
-  description?: string;
-}
-
-const global_error_handler = () => (err: any, req: Request, res: Response, next: NextFunction) => {
-  const errorResponse: ApiError = {
-    error: err.message || 'Internal server error',
-    code: err.statusCode || 500,
-    description: err.description || 'An unexpected error occurred',
-  };
-  res.status(errorResponse.code).json(errorResponse);
-}
+app.get('/', status_endpoint_handler);
 
 app.use(global_error_handler());
 
