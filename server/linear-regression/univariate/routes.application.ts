@@ -2,7 +2,7 @@ import { NextFunction, Request, Response, Router } from 'express';
 import { calc_cost_function_for_linear_regression_fixed_b, calc_cost_function_for_linear_regression_fixed_w, calc_cost_function_surface_for_linear_regression_by_range, calc_predictions_by_features } from './calc.domain';
 import { available_cost_functions } from './config';
 import { get_cost_function_by_name } from './cost_function.application';
-import { gradient_descent_for_linear_regression } from './gradient-desscent';
+import { gradient_descent_for_linear_regression } from './gradient-descent';
 import { linear_regression_model } from './model.domain';
 import { getTrainingSet } from './training-set.data.infrastructure';
 import { get_number_from_query_string_factory, get_option_from_query_string_factory } from './validation.application';

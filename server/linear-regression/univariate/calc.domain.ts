@@ -1,6 +1,6 @@
 import { Cost_Function } from "./cost_function.domain";
 import { Model_Function, linear_regression_model } from "./model.domain";
-import { create_vector_from_range } from "./vectors.domain";
+import { create_vector_from_range } from "../vectors.domain";
 
 export interface Cost_Function_Fixed_W {
     b: number[];

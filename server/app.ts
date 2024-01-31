@@ -1,7 +1,7 @@
 import cors from 'cors';
 import express, { NextFunction, Request, Response } from 'express';
 
-import { linear_regression_routes } from './linear-regression/routes.application';
+import { linear_regression_routes } from './linear-regression/univariate/routes.application';
 
 const app = express();
 const port = 3000;
