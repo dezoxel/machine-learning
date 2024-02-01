@@ -27,7 +27,7 @@ const X_train = matrix_from_arrays([
 const y_train = vector_from_array([
     460,
     232,
-    315
+    178
 ]);
 
 export const get_multiple_regression_training_set = async (): Promise<Multiple_Linear_Regression_Training_Set> => {
