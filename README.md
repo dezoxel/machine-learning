@@ -18,6 +18,7 @@ open client/index.html
 
 
 ## To Do
+- Add /predict endpoint for the univariate linear regression
 - Cover with unit tests
 - Move training set to JSON
 - Make training set config using UI

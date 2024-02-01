@@ -1,5 +1,5 @@
 import { Cost_Function } from "./cost_function";
-import { linear_regression_model } from "./model";
+import { univariate_linear_regression_model } from "./model";
 
 export interface Gradient_Step_For_Linear_Regression {
     dj_dw: number;
@@ -11,7 +11,7 @@ export const gradient_step_for_linear_regression = (x: number[], y: number[], w:
     let dj_db = 0;
 
     for (let i = 0; i < m; i++) {
-        const f_wb = linear_regression_model(w, b)(x[i]);
+        const f_wb = univariate_linear_regression_model(w, b)(x[i]);
 
         const dj_dw_i = (f_wb - y[i]) * x[i];
         const dj_db_i = f_wb - y[i];
@@ -48,7 +48,7 @@ export const gradient_descent_for_linear_regression = (suitable_J: number, max_i
         w = w - alpha * dj_dw;
         b = b - alpha * dj_db;
 
-        J = cost_function(linear_regression_model(w, b));
+        J = cost_function(univariate_linear_regression_model(w, b));
         J_history.push(J);
 
         if (i % 1000 === 0) {

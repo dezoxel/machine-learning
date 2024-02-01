@@ -1,17 +1,17 @@
 import { Cost_Function } from "./cost_function";
-import { Model_Function, linear_regression_model } from "./model";
-import { create_vector_from_range } from "./vectors";
+import { Univariate_Linear_Regression_Model_Function, univariate_linear_regression_model } from "./model";
+import { vector_from_range } from "../../../platform/math";
 
 export interface Cost_Function_Fixed_W {
     b: number[];
     J: number[];
 }
 export const calc_cost_function_for_linear_regression_fixed_w = (w: number, b_begin: number, b_end: number, b_step: number, cost_function: Cost_Function): Cost_Function_Fixed_W => {
-    const b_vector = create_vector_from_range(b_begin, b_end, b_step);
+    const b_vector = vector_from_range(b_begin, b_end, b_step);
 
     const J_wb = b_vector.map((b) => {
 
-        const model = linear_regression_model(w, b);
+        const model = univariate_linear_regression_model(w, b);
         const J = cost_function(model);
 
         return Number(J.toPrecision(2));
@@ -25,11 +25,11 @@ export interface Cost_Function_Fixed_B {
     J: number[];
 }
 export const calc_cost_function_for_linear_regression_fixed_b = (b: number, w_begin: number, w_end: number, w_step: number, cost_function: Cost_Function): Cost_Function_Fixed_B => {
-    const w_vector = create_vector_from_range(w_begin, w_end, w_step);
+    const w_vector = vector_from_range(w_begin, w_end, w_step);
 
     const J_wb = w_vector.map((w) => {
 
-        const model = linear_regression_model(w, b);
+        const model = univariate_linear_regression_model(w, b);
         const J = cost_function(model);
 
         return Number(J.toPrecision(2));
@@ -43,7 +43,7 @@ export const calc_cost_function_for_linear_regression_by_range = (w_vector: numb
 
         const J_fixed_w = b_vector.map((b) => {
 
-            const model = linear_regression_model(w, b);
+            const model = univariate_linear_regression_model(w, b);
             const J = cost_function(model);
 
             return Number(J.toPrecision(2));
@@ -65,8 +65,8 @@ export const calc_cost_function_surface_for_linear_regression_by_range = (
     w_begin: number, w_end: number, w_step: number, b_begin: number, b_end: number, b_step: number, cost_function: Cost_Function
 ): Cost_Function_Surface_By_WB_Range => {
 
-    const w_vector = create_vector_from_range(w_begin, w_end, w_step);
-    const b_vector = create_vector_from_range(b_begin, b_end, b_step);
+    const w_vector = vector_from_range(w_begin, w_end, w_step);
+    const b_vector = vector_from_range(b_begin, b_end, b_step);
 
     const cost_function_values = calc_cost_function_for_linear_regression_by_range(w_vector, b_vector)(cost_function);
 
@@ -84,7 +84,7 @@ export interface Cost_Function_Range_Fixed_B {
     J: number[][];
 }
 
-export const calc_predictions_by_features = (model: Model_Function) => (x: number[]): number[] => {
+export const calc_predictions_by_features = (model: Univariate_Linear_Regression_Model_Function) => (x: number[]): number[] => {
     const m = x.length;
 
     const y_hat = [];

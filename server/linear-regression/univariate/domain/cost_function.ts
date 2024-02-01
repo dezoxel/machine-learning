@@ -1,8 +1,8 @@
-import { Model_Function } from "./model";
+import { Univariate_Linear_Regression_Model_Function } from "./model";
 
-export type Cost_Function = (model: Model_Function) => number;
+export type Cost_Function = (model: Univariate_Linear_Regression_Model_Function) => number;
 
-export const mean_squared_error = (x: number[], y: number[]) => (model: Model_Function) => {
+export const mean_squared_error = (x: number[], y: number[]) => (model: Univariate_Linear_Regression_Model_Function) => {
     const m = x.length;
     let cost = 0;
 
@@ -18,7 +18,7 @@ export const mean_squared_error = (x: number[], y: number[]) => (model: Model_Fu
     return J;
 }
 
-export const mean_absolute_error = (x: number[], y: number[]) => (model: Model_Function) => {
+export const mean_absolute_error = (x: number[], y: number[]) => (model: Univariate_Linear_Regression_Model_Function) => {
     const m = x.length;
 
     let sum = 0;
