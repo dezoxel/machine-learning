@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it } from 'vitest'
 import { vector_from_array } from '../../../platform/math';
 import { multiple_linear_regression_model } from './model';
 import { get_multiple_regression_training_set } from '../infrastructure/training-set.data';
-import { mean_squared_error } from './cost_function';
+import { mean_squared_error } from './cost-function';
 
 interface Ctx {
     X: number[][];

@@ -1,4 +1,4 @@
-import { Cost_Function } from "./cost_function";
+import { Cost_Function } from "./cost-function";
 import { univariate_linear_regression_model } from "./model";
 
 export interface Gradient_Step_For_Linear_Regression {

@@ -1,4 +1,4 @@
-import { Cost_Function } from "./cost_function";
+import { Cost_Function } from "./cost-function";
 import { Univariate_Linear_Regression_Model_Function, univariate_linear_regression_model } from "./model";
 import { vector_from_range } from "../../../platform/math";
 
