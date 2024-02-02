@@ -1,8 +1,7 @@
 import { beforeEach, describe, expect, it } from 'vitest'
 import { vector_from_array } from '../../../platform/math';
-import { multiple_linear_regression_model } from './model';
 import { get_multiple_regression_training_set } from '../infrastructure/training-set.data';
-import { mean_squared_error } from './cost-function';
+import { mean_squared_error_for_multiple_linear_regression } from './cost-function';
 
 interface Ctx {
     X: number[][];
@@ -21,14 +20,12 @@ describe('cost_function', () => {
         context.b = 785.1811367994083;
     });
 
-    it<Ctx>('calcs ok', ({X, y, w, b}) => {
+    it<Ctx>('calcs ok', ({ X, y, w, b }) => {
         const expected_cost = 0.0;
 
-        const model = multiple_linear_regression_model(w, b);
-        const cost_function = mean_squared_error(X, y);
-        const cost = cost_function(model);
+        const cost = mean_squared_error_for_multiple_linear_regression(X, y, w, b);
 
-        const e = 0.0001;
-        expect((expected_cost - cost) < e).toBe(true);
+        const precision = 0.0001;
+        expect((expected_cost - cost) < precision).toBe(true);
     });
 });
