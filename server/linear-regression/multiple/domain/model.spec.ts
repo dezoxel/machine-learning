@@ -21,14 +21,12 @@ describe('model', () => {
     });
 
     it<Ctx>('predicts ok', ({ X, y, w, b }) => {
-        const model = multiple_linear_regression_model(w, b);
-
         const first_training_example_features = X[0];
         const first_training_example_target = y[0];
 
         const expected_price = first_training_example_target;
 
-        const y_hat = model(first_training_example_features);
+        const y_hat = multiple_linear_regression_model(w, b, first_training_example_features);
 
         const e = 0.0001;
         expect((expected_price - y_hat) < e).toBe(true);
