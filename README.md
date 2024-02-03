@@ -13,9 +13,8 @@ npm run dev
 Server will be available on http://localhost:3000.
 
 ```
-open client/index.html
+open client/linear_regression/univariate/index.html
 ```
-
 
 ## To Do
 - [ ] Add /predict endpoint for the univariate linear regression

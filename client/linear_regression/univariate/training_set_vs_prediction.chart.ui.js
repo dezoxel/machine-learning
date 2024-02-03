@@ -26,7 +26,7 @@ const plot_linear_regression = (chartId, trainingSet, predictedTargets) => {
     const data = [training_set_points, prediction_points];
 
     const layout = {
-        title: "Linear Regression",
+        title: "Training Set vs Prediction",
         xaxis: { title: "X Axis" },
         // yaxis: { title: "Y Axis", scaleanchor: "x", scaleratio: 1 },
         yaxis: { title: "Y Axis" },

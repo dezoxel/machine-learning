@@ -1,16 +1,17 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Linear Regression</title>
+    <title>Univariate Linear Regression</title>
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
-    <script src="./shared_libs.js"></script>
+    <script src="../../env.js"></script>
+    <script src="../../shared_libs.js"></script>
     <script src="./api.js"></script>
-    <script src="./linear_regression.chart.ui.js"></script>
+    <script src="./training_set_vs_prediction.chart.ui.js"></script>
     <script src="./cost_function_fixed_b.chart.ui.js"></script>
     <script src="./cost_function_fixed_w.chart.ui.js"></script>
     <script src="./cost_by_iteration.chart.ui.js"></script>
     <script src="./cost_function_3d.chart.ui.js"></script>
-    <script src="./linear_regression.application.js"></script>
+    <script src="./app.js"></script>
     <style>
       .container {
         display: flex;
@@ -44,6 +45,7 @@
   </head>
 
   <body>
+    <h2>Space Config</h2>
     <div class="container">
       w_begin:
       <input
@@ -96,12 +98,12 @@
       />
     </div>
 
+    <h2>Model Params</h2>
     <div class="container">
       <label for="w_input">w:</label>
       <input type="number" id="w_input" value="200" placeholder="w" step="10" />
       <label for="b_input">b:</label>
       <input type="number" id="b_input" value="100" placeholder="b" step="10" />
-
       <label for="cost_function_name">Cost Function:</label>
       <select name="cost_function_name" id="cost_function_name">
         <option value="mean_squared_error">Mean Squared Error</option>
@@ -114,11 +116,13 @@
       <div id="linear_regression_cost_function_3d"></div>
     </div>
 
+    <h2>Cost Function</h2>
     <div class="container">
       <div id="linear_regression_cost_function_fixed_w"></div>
       <div id="linear_regression_cost_function_fixed_b"></div>
     </div>
 
+    <h2>Train</h2>
     <div class="container">
       <div>
         <button id="linear_regression_train">Train</button>
@@ -185,129 +189,6 @@
       <div id="linear_regression_cost_by_iteration_end"></div>
     </div>
 
-    <script>
-      // App layer: BEGIN
-      const runApp = () => {
-        const host = "http://localhost:3000";
-
-        const w = get_number_input_value("w_input");
-        const b = get_number_input_value("b_input");
-
-        const w_begin = get_number_input_value("w_begin_input");
-        const w_end = get_number_input_value("w_end_input");
-        const w_step = get_number_input_value("w_step_input");
-
-        const b_begin = get_number_input_value("b_begin_input");
-        const b_end = get_number_input_value("b_end_input");
-        const b_step = get_number_input_value("b_step_input");
-
-        const cost_function_name = get_string_input_value("cost_function_name");
-
-        const config = {
-          host,
-
-          w,
-          b,
-
-          w_begin,
-          w_end,
-          w_step,
-
-          b_begin,
-          b_end,
-          b_step,
-
-          cost_function_name,
-        };
-        linear_regression_app(config);
-      };
-
-      const runTrainApp = () => {
-        const host = "http://localhost:3000";
-
-        const cost_function_name = get_string_input_value("cost_function_name");
-
-        // train
-        const max_iterations = get_number_input_value(
-          "linear_regression_train_max_iterations"
-        );
-        const learning_rate = get_number_input_value(
-          "linear_regression_train_learning_rate"
-        );
-        const initial_w = get_number_input_value(
-          "linear_regression_train_initial_w"
-        );
-        const initial_b = get_number_input_value(
-          "linear_regression_train_initial_b"
-        );
-
-        const config = {
-          host,
-
-          cost_function_name,
-
-          max_iterations,
-          learning_rate,
-          initial_w,
-          initial_b,
-        };
-        linear_regression_app_train(config);
-      };
-
-      const runVisualizeTrainApp = () => {
-        linear_regression_app_visualize_train();
-      };
-      const runStopVisualizeTrainApp = () => {
-        linear_regression_app_visualize_train_stop();
-      };
-      // App layer: END
-
-      // Entry point: BEGIN
-      function main() {
-        document.getElementById("w_input").addEventListener("input", runApp);
-        document.getElementById("b_input").addEventListener("input", runApp);
-
-        document
-          .getElementById("w_begin_input")
-          .addEventListener("input", runApp);
-        document
-          .getElementById("w_end_input")
-          .addEventListener("input", runApp);
-        document
-          .getElementById("w_step_input")
-          .addEventListener("input", runApp);
-
-        document
-          .getElementById("b_begin_input")
-          .addEventListener("input", runApp);
-        document
-          .getElementById("b_end_input")
-          .addEventListener("input", runApp);
-        document
-          .getElementById("b_step_input")
-          .addEventListener("input", runApp);
-
-        document
-          .getElementById("cost_function_name")
-          .addEventListener("change", runApp);
-
-        document
-          .getElementById("linear_regression_train")
-          .addEventListener("click", runTrainApp);
-
-        document
-          .getElementById("linear_regression_train_visualize")
-          .addEventListener("click", runVisualizeTrainApp);
-
-        document
-          .getElementById("linear_regression_train_visualize_stop")
-          .addEventListener("click", runStopVisualizeTrainApp);
-
-        runApp();
-      }
-
-      main();
-      // Entry point: END
-    </script>
+    <script src="./index.js"></script>
   </body>
 </html>

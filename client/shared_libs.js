@@ -53,3 +53,13 @@ function get_matrix_col(matrix, col_index) {
 function get_matrix_row(matrix, row_index) {
     return matrix[row_index];
 }
+
+function get_env_var(key) {
+    const value = window.__env[key];
+
+    if (value === undefined) {
+        throw new Error(`env.js: Env var is undefined: ${key}`);
+    }
+
+    return value;
+}

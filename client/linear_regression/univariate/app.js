@@ -1,5 +1,5 @@
 let params_history = [];
-const linear_regression_app_train = (config) => {
+const univariate_linear_regression_app_train = (config) => {
     const { host, cost_function_name, max_iterations, initial_w, initial_b, learning_rate } = config;
 
     const train_endpoint =
@@ -27,7 +27,7 @@ const linear_regression_app_train = (config) => {
 };
 
 let timerId = null;
-const linear_regression_app_visualize_train = () => {
+const univariate_linear_regression_app_visualize_train = () => {
     const h = [...params_history];
 
     timerId = setInterval(() => {
@@ -49,11 +49,11 @@ const linear_regression_app_visualize_train = () => {
     }, 500);
 };
 
-const linear_regression_app_visualize_train_stop = () => {
+const univariate_linear_regression_app_visualize_train_stop = () => {
     clearTimeout(timerId);
 }
 
-const linear_regression_app = (config) => {
+const univariate_linear_regression_app = (config) => {
     const { host, w, b, w_begin, w_end, w_step, b_begin, b_end, b_step, cost_function_name } = config;
 
     const training_set_endpoint = get_training_set_endpoint(host);

@@ -55,7 +55,7 @@ const plot_linear_regression_cost_function_3d = (
     const data = [cost_function_points, actual_cost_points];
 
     const layout = {
-        title: "Cost Function",
+        title: "Cost Function by w and b",
         scene: {
             xaxis: { title: "w" },
             yaxis: { title: "b", scaleanchor: "x", scaleratio: 1 },
