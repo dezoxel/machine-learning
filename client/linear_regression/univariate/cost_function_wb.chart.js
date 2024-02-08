@@ -16,7 +16,7 @@ const calculateJ = (J) => {
 };
 
 
-const plot_linear_regression_cost_function_3d = (
+const plot_linear_regression_cost_function_wb = (
     chartId,
     cost_function_sample_range,
     actual_cost

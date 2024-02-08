@@ -28,13 +28,31 @@ const handle_error = (error) => {
     );
 };
 
-// TODO: throw an error if not found
 function get_number_input_value(id) {
     const input_element = document.getElementById(id);
     if (input_element && input_element.value) {
         return parseFloat(input_element.value);
+    } else {
+        throw new Error(`get_number_input_value: Unable to find element with id: ${id}`);
     }
-    return null;
+}
+
+function set_number_to_html(id, value) {
+    const el = document.getElementById(id);
+    if (el) {
+        el.innerText = value;
+    } else {
+        throw new Error(`set_number_to_html: Unable to find element with id: ${id}`);
+    }
+}
+
+function get_number_from_html(id) {
+    const el = document.getElementById(id);
+    if (el) {
+        return parseFloat(el.innerText);
+    } else {
+        throw new Error(`get_number_from_html: Unable to find element with id: ${id}`);
+    }
 }
 
 // TODO: throw an error if not found
@@ -62,4 +80,52 @@ function get_env_var(key) {
     }
 
     return value;
+}
+
+function create_w_inputs(containerId, w_vector) {
+    const container = document.getElementById(containerId);
+
+    w_vector.forEach((w, j) => {
+        const label = document.createElement('label');
+        label.setAttribute('for', `w_input_${j}`);
+        label.innerHTML = `w<sub>(${j})</sub>:`;
+
+        const input = document.createElement('input');
+        input.type = 'number';
+        input.id = `w_input_${j}`;
+        input.value = w;
+        input.placeholder = `w${j}`;
+        input.step = '10';
+
+        container.appendChild(label);
+        container.appendChild(input);
+    });
+}
+
+function create_training_set_to_prediction_charts(containerId, n) {
+    const container = document.getElementById(containerId);
+
+    for (let j = 0; j < n; j++) {
+        const chart = document.createElement('div');
+        chart.id = `training_set_to_prediction_chart_${j}`;
+
+        container.appendChild(chart);
+    }
+}
+
+function get_w_vector_from_html(containerId) {
+    const w_vector_html = document.getElementById(containerId).children;
+
+    const w_vector = Array.from(w_vector_html)
+        .filter((input) => input.tagName === 'INPUT')
+        .map((input) => parseFloat(input.value));
+
+    return w_vector;
+}
+
+function update_w_inputs(w_vector) {
+    w_vector.forEach((w, j) => {
+        const input = document.getElementById(`w_input_${j}`);
+        input.value = w;
+    });
 }

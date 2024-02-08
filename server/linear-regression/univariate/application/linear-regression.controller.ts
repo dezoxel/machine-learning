@@ -1,12 +1,11 @@
 import { NextFunction, Request, Response, Router } from 'express';
-import { calc_cost_function_for_linear_regression_fixed_b, calc_cost_function_for_linear_regression_fixed_w, calc_cost_function_surface_for_linear_regression_by_range, calc_predictions_by_features } from '../domain/calc';
-import { available_cost_functions } from '../config';
-import { get_cost_function_by_name } from './cost_function.service';
-import { gradient_descent_for_linear_regression } from '../domain/gradient-descent';
-import { univariate_linear_regression_model } from '../domain/model';
-import { get_univariate_linear_regression_training_set } from '../infrastructure/training-set.data';
-import { get_number_from_query_string_factory, get_option_from_query_string_factory } from './validation.service';
 import { status_endpoint_handler } from '../../../platform/status-endpoint-handler';
+import { available_cost_functions } from '../config';
+import { calc_cost_function_for_linear_regression_fixed_b, calc_cost_function_for_linear_regression_fixed_w, calc_cost_function_surface_for_linear_regression_by_range, calc_predictions_by_features } from '../domain/calc';
+import { gradient_descent_for_univariate_linear_regression, gradient_function_for_univariate_linear_regression } from '../domain/gradient-descent';
+import { get_univariate_linear_regression_training_set } from '../infrastructure/training-set';
+import { get_cost_function_by_name } from './cost_function.service';
+import { get_number_from_query_string_factory, get_option_from_query_string_factory } from './validation.service';
 
 export const univariate_linear_regression_controller = Router();
 
@@ -14,8 +13,8 @@ univariate_linear_regression_controller.get('/', status_endpoint_handler);
 
 // -------------------------------------------------------------------------------- //
 export interface Training_Set_Response {
-    features: number[];
-    targets: number[];
+    x: number[];
+    y: number[];
 }
 univariate_linear_regression_controller.get('/training-set', async (_: Request, res: Response<Training_Set_Response>, next: NextFunction) => {
     try {
@@ -35,7 +34,7 @@ export interface Prediction_By_Features_Query_Params {
 export interface Prediction_By_Features_Response {
     w: number;
     b: number;
-    predictions: number[];
+    y_hat: number[];
 }
 univariate_linear_regression_controller.get('/predictions-by-features', async (req: Request, res: Response<Prediction_By_Features_Response>, next: NextFunction) => {
     const get_number_from_query_string = get_number_from_query_string_factory<Prediction_By_Features_Query_Params>(req.query);
@@ -44,13 +43,11 @@ univariate_linear_regression_controller.get('/predictions-by-features', async (r
         const w = get_number_from_query_string('w');
         const b = get_number_from_query_string('b');
 
-        const { features: x } = await get_univariate_linear_regression_training_set();
+        const { x } = await get_univariate_linear_regression_training_set();
 
-        const model = univariate_linear_regression_model(w, b);
+        const y_hat = calc_predictions_by_features(w, b, x);
 
-        const y_hat = calc_predictions_by_features(model)(x);
-
-        res.json({ predictions: y_hat, w, b });
+        res.json({ y_hat, w, b });
     } catch (e) {
         next(e);
     }
@@ -85,10 +82,9 @@ univariate_linear_regression_controller.get('/cost-function-by-wb-range', async 
         const cost_function_name = get_option_from_query_string('cost_function_name', available_cost_functions);
         const cost_function = get_cost_function_by_name(cost_function_name);
 
-        const { features: x, targets: y } = await get_univariate_linear_regression_training_set();
-        const cost = cost_function(x, y);
+        const { x, y } = await get_univariate_linear_regression_training_set();
 
-        const cost_function_surface = calc_cost_function_surface_for_linear_regression_by_range(w_begin, w_end, w_step, b_begin, b_end, b_step, cost);
+        const cost_function_surface = calc_cost_function_surface_for_linear_regression_by_range(x, y, w_begin, w_end, w_step, b_begin, b_end, b_step, cost_function);
 
         res.json(cost_function_surface);
     } catch (e) {
@@ -120,10 +116,9 @@ univariate_linear_regression_controller.get('/cost-function-range-fixed-w', asyn
         const cost_function_name = get_option_from_query_string('cost_function_name', available_cost_functions);
         const cost_function = get_cost_function_by_name(cost_function_name);
 
-        const { features: x, targets: y } = await get_univariate_linear_regression_training_set();
-        const cost = cost_function(x, y);
+        const { x, y } = await get_univariate_linear_regression_training_set();
 
-        const cost_function_fixed_w = calc_cost_function_for_linear_regression_fixed_w(w, b_begin, b_end, b_step, cost);
+        const cost_function_fixed_w = calc_cost_function_for_linear_regression_fixed_w(x, y, w, b_begin, b_end, b_step, cost_function);
 
         res.json(cost_function_fixed_w);
     } catch (e) {
@@ -155,10 +150,9 @@ univariate_linear_regression_controller.get('/cost-function-range-fixed-b', asyn
         const cost_function_name = get_option_from_query_string('cost_function_name', available_cost_functions);
         const cost_function = get_cost_function_by_name(cost_function_name);
 
-        const { features: x, targets: y } = await get_univariate_linear_regression_training_set();
-        const cost = cost_function(x, y);
+        const { x, y } = await get_univariate_linear_regression_training_set();
 
-        const cost_function_fixed_b = calc_cost_function_for_linear_regression_fixed_b(b, w_begin, w_end, w_step, cost);
+        const cost_function_fixed_b = calc_cost_function_for_linear_regression_fixed_b(x, y, b, w_begin, w_end, w_step, cost_function);
 
         res.json(cost_function_fixed_b);
     } catch (e) {
@@ -187,12 +181,9 @@ univariate_linear_regression_controller.get('/cost-function-by-wb', async (req: 
         const cost_function_name = get_option_from_query_string('cost_function_name', available_cost_functions);
         const cost_function = get_cost_function_by_name(cost_function_name);
 
-        const { features: x, targets: y } = await get_univariate_linear_regression_training_set();
-        const cost = cost_function(x, y);
+        const { x, y } = await get_univariate_linear_regression_training_set();
 
-        const model = univariate_linear_regression_model(w, b);
-
-        const J = cost(model);
+        const J = cost_function(x, y, w, b);
 
         const costFunction = { w, b, J };
 
@@ -215,8 +206,7 @@ export interface Train_Response {
     b: number;
     J: number;
     i: number;
-    J_history: number[];
-    params_history: number[][];
+    h: { w: number, b: number }[];
 }
 univariate_linear_regression_controller.get('/train', async (req: Request, res: Response<Train_Response>, next: NextFunction) => {
     const get_number_from_query_string = get_number_from_query_string_factory<Train_Query_Params>(req.query);
@@ -228,18 +218,31 @@ univariate_linear_regression_controller.get('/train', async (req: Request, res: 
         const learning_rate = get_number_from_query_string('learning_rate');
         const cost_function_name = get_option_from_query_string('cost_function_name', available_cost_functions);
         const cost_function = get_cost_function_by_name(cost_function_name);
+        const gradient_function = gradient_function_for_univariate_linear_regression;
 
-        console.log(`Max Iterations: ${max_iterations}. Initial W: ${initial_w}. Initial B: ${initial_b}. Learning Rate: ${learning_rate}. Cost Function: ${cost_function_name}.`)
+        const { x, y } = await get_univariate_linear_regression_training_set();
 
-        const { features: x, targets: y } = await get_univariate_linear_regression_training_set();
+        const J_precision = 0.0001;
 
-        const cost = cost_function(x, y);
+        console.log('x', x);
+        console.log('y', y);
 
-        const suitable_J = 0.0001;
-        const { w, b, J, i, J_history, params_history } = gradient_descent_for_linear_regression(suitable_J, max_iterations, learning_rate, initial_w, initial_b, x, y, cost);
+        console.log(`Start training. ` +
+            `J_precision: ${J_precision}. ` +
+            `Max Iterations: ${max_iterations}. ` +
+            `Initial W: ${initial_w}. ` +
+            `Initial B: ${initial_b}. ` +
+            `Learning Rate: ${learning_rate}. ` +
+            `Cost Function: ${cost_function_name}.`)
+
+        const { w, b, J, i, h } = gradient_descent_for_univariate_linear_regression(
+            J_precision, max_iterations, learning_rate, initial_w, initial_b, x, y,
+            cost_function, gradient_function, { print_results_every_n_iterations: 10 }
+        );
+
         console.log(`Training completed. J=${J.toExponential(3)}, i=${i}, w=${w.toFixed(4)}, b=${b.toFixed(4)}`);
 
-        res.json({ w, b, J, J_history, params_history, i });
+        res.json({ w, b, J, h, i });
     } catch (e) {
         next(e);
     }

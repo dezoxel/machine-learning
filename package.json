@@ -6,8 +6,9 @@
   "scripts": {
     "build": "tsc",
     "start": "node dist/app.js",
-    "dev": "rm -rf dist && tsc && node dist/app.js",
-    "test": "vitest"
+    "dev": "rm -rf dist && tsc && npm run copy-assets && node dist/app.js",
+    "test": "vitest",
+    "copy-assets": "cp -R server/data dist/data"
   },
   "repository": {
     "type": "git",

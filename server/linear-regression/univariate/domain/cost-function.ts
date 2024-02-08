@@ -1,35 +1,37 @@
-import { Univariate_Linear_Regression_Model_Function } from "./model";
+import { univariate_linear_regression_model } from "./model";
 
-export type Cost_Function = (model: Univariate_Linear_Regression_Model_Function) => number;
+export type Cost_Function_For_Univariate_Linear_Regression = (x: number[], y: number[], w: number, b: number) => number;
 
-export const mean_squared_error = (x: number[], y: number[]) => (model: Univariate_Linear_Regression_Model_Function) => {
-    const m = x.length;
-    let cost = 0;
+export const mean_squared_error_for_univariate_linear_regression: Cost_Function_For_Univariate_Linear_Regression =
+    (x, y, w, b) => {
+        const m = x.length;
+        let cost = 0;
 
-    for (let i = 0; i < m; i++) {
-        const f_wb = model(x[i]);
+        for (let i = 0; i < m; i++) {
+            const y_hat = univariate_linear_regression_model(w, b, x[i]);
 
-        const error_i = Math.pow(f_wb - y[i], 2);
-        cost += error_i;
+            const error_i = Math.pow(y_hat - y[i], 2);
+            cost += error_i;
+        }
+
+        const J = 1 / (2 * m) * cost;
+
+        return J;
     }
 
-    const J = 1 / (2 * m) * cost;
+export const mean_absolute_error_for_univariate_linear_regression: Cost_Function_For_Univariate_Linear_Regression =
+    (x, y, w, b) => {
+        const m = x.length;
 
-    return J;
-}
+        let sum = 0;
+        for (let i = 0; i < m; i++) {
+            const y_hat_i = univariate_linear_regression_model(w, b, x[i]);
 
-export const mean_absolute_error = (x: number[], y: number[]) => (model: Univariate_Linear_Regression_Model_Function) => {
-    const m = x.length;
+            const error_i = Math.abs(y_hat_i - y[i]);
+            sum += error_i;
+        }
 
-    let sum = 0;
-    for (let i = 0; i < m; i++) {
-        const y_hat_i = model(x[i]);
+        const J = 1 / m * sum;
 
-        const error_i = Math.abs(y_hat_i - y[i]);
-        sum += error_i;
+        return J;
     }
-
-    const J = 1 / m * sum;
-
-    return J;
-}

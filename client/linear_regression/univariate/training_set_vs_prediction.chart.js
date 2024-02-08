@@ -1,8 +1,8 @@
-const plot_linear_regression = (chartId, trainingSet, predictedTargets) => {
+const plot_training_set_vs_prediction_chart = (chartId, x, y, y_hat) => {
     const training_set_points = {
         name: "Training Set",
-        x: trainingSet.features,
-        y: trainingSet.targets,
+        x,
+        y,
         mode: "markers",
         type: "scatter",
         marker: {
@@ -13,8 +13,8 @@ const plot_linear_regression = (chartId, trainingSet, predictedTargets) => {
 
     const prediction_points = {
         name: "Prediction",
-        x: trainingSet.features,
-        y: predictedTargets,
+        x,
+        y: y_hat,
         mode: "lines",
         type: "scatter",
         marker: {
@@ -27,9 +27,9 @@ const plot_linear_regression = (chartId, trainingSet, predictedTargets) => {
 
     const layout = {
         title: "Training Set vs Prediction",
-        xaxis: { title: "X Axis" },
-        // yaxis: { title: "Y Axis", scaleanchor: "x", scaleratio: 1 },
-        yaxis: { title: "Y Axis" },
+        xaxis: { title: "Size (sqft)" },
+        // yaxis: { title: "Price", scaleanchor: "x", scaleratio: 1 },
+        yaxis: { title: "Price" },
     };
 
     Plotly.newPlot(chartId, data, layout);

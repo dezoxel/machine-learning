@@ -6,11 +6,11 @@
     <script src="../../env.js"></script>
     <script src="../../shared_libs.js"></script>
     <script src="./api.js"></script>
-    <script src="./training_set_vs_prediction.chart.ui.js"></script>
-    <script src="./cost_function_fixed_b.chart.ui.js"></script>
-    <script src="./cost_function_fixed_w.chart.ui.js"></script>
-    <script src="./cost_by_iteration.chart.ui.js"></script>
-    <script src="./cost_function_3d.chart.ui.js"></script>
+    <script src="./training_set_vs_prediction.chart.js"></script>
+    <script src="./cost_function_fixed_b.chart.js"></script>
+    <script src="./cost_function_fixed_w.chart.js"></script>
+    <script src="./cost_function_wb.chart.js"></script>
+    <script src="./cost_by_iteration.chart.js"></script>
     <script src="./app.js"></script>
     <style>
       .container {
@@ -18,92 +18,93 @@
         justify-content: space-between;
       }
 
-      #linear_regression {
+      #training_set_vs_prediction {
+        width: 100%;
+        max-width: 1000px;
+        height: 600px;
+      }
+
+      #cost_function_fixed_b {
         width: 100%;
         max-width: 700px;
         height: 400px;
       }
 
-      #linear_regression_cost_function_fixed_b {
+      #cost_function_fixed_w {
         width: 100%;
         max-width: 700px;
         height: 400px;
       }
 
-      #linear_regression_cost_function_fixed_w {
+      #cost_function_wb {
         width: 100%;
-        max-width: 700px;
-        height: 400px;
-      }
-
-      #linear_regression_cost_function_3d {
-        width: 100%;
-        max-width: 700px;
-        height: 400px;
+        max-width: 1600px;
+        height: 1000px;
       }
     </style>
   </head>
 
   <body>
-    <h2>Space Config</h2>
+    <h2>Train</h2>
     <div class="container">
-      w_begin:
-      <input
-        type="number"
-        id="w_begin_input"
-        value="0"
-        placeholder="w_begin"
-        step="10"
-      />
-      w_end:
-      <input
-        type="number"
-        id="w_end_input"
-        value="400"
-        placeholder="w_end"
-        step="10"
-      />
-      w_step:
-      <input
-        type="number"
-        id="w_step_input"
-        value="10"
-        placeholder="w_step"
-        step="10"
-      />
+      <div>
+        <button id="train">Train</button>
+      </div>
+      <div>
+        <label for="train_max_iterations">max_iterations:</label>
+        <input
+          type="number"
+          id="train_max_iterations"
+          value="10000"
+          placeholder="max_iterations"
+        />
+      </div>
 
-      b_begin:
-      <input
-        type="number"
-        id="b_begin_input"
-        value="0"
-        placeholder="b_begin"
-        step="10"
-      />
-      b_end:
-      <input
-        type="number"
-        id="b_end_input"
-        value="400"
-        placeholder="b_end"
-        step="10"
-      />
-      b_step:
-      <input
-        type="number"
-        id="b_step_input"
-        value="10"
-        placeholder="b_step"
-        step="10"
-      />
+
+      <div>
+        <label for="train_learning_rate">alpha:</label>
+        <input
+          type="number"
+          id="train_learning_rate"
+          value="0.01"
+          placeholder="learning_rate"
+        />
+      </div>
+
+      <span>
+        <span>initial_w:</span>
+        <span id="train_initial_w">0</span>
+      </span>
+
+      <span>
+        <span>initial_b:</span>
+        <span id="train_initial_b">0</span>
+      </span>
+
+      <span>
+        <span>J:</span>
+        <span id="J"></span>
+      </span>
+    </div>
+
+    <div class="container">
+      <div id="cost_by_iteration_begin"></div>
+      <div id="cost_by_iteration_end"></div>
     </div>
 
     <h2>Model Params</h2>
     <div class="container">
-      <label for="w_input">w:</label>
-      <input type="number" id="w_input" value="200" placeholder="w" step="10" />
-      <label for="b_input">b:</label>
-      <input type="number" id="b_input" value="100" placeholder="b" step="10" />
+      <div>
+        <button id="predict">Predict</button>
+      </div>
+      <span>
+        <span>w:</span>
+        <span id="w"></span>
+      </span>
+      <span>
+        <span>b:</span>
+        <span id="b"></span>
+      </span>
       <label for="cost_function_name">Cost Function:</label>
       <select name="cost_function_name" id="cost_function_name">
         <option value="mean_squared_error">Mean Squared Error</option>
@@ -112,81 +113,17 @@
     </div>
 
     <div class="container">
-      <div id="linear_regression"></div>
-      <div id="linear_regression_cost_function_3d"></div>
+      <div id="training_set_vs_prediction"></div>
+    </div>
+
+    <div class="container">
+      <div id="cost_function_wb"></div>
     </div>
 
     <h2>Cost Function</h2>
     <div class="container">
-      <div id="linear_regression_cost_function_fixed_w"></div>
-      <div id="linear_regression_cost_function_fixed_b"></div>
-    </div>
-
-    <h2>Train</h2>
-    <div class="container">
-      <div>
-        <button id="linear_regression_train">Train</button>
-        <button id="linear_regression_train_visualize">Visualize Train</button>
-        <button id="linear_regression_train_visualize_stop">Stop Visualization</button>
-      </div>
-      <div>
-        <label for="linear_regression_train_max_iterations"
-          >max_iterations:</label
-        >
-        <input
-          type="number"
-          id="linear_regression_train_max_iterations"
-          value="10000"
-          placeholder="max_iterations"
-        />
-      </div>
-
-      <div>
-        <label for="linear_regression_train_initial_w">initial_w:</label>
-        <input
-          type="number"
-          id="linear_regression_train_initial_w"
-          value="0"
-          placeholder="initial_w"
-        />
-      </div>
-
-      <div>
-        <label for="linear_regression_train_initial_b">initial_b:</label>
-        <input
-          type="number"
-          id="linear_regression_train_initial_b"
-          value="0"
-          placeholder="initial_b"
-        />
-      </div>
-
-      <div>
-        <label for="linear_regression_train_learning_rate"
-          >learning_rate:</label
-        >
-        <input
-          type="number"
-          id="linear_regression_train_learning_rate"
-          value="0.01"
-          placeholder="learning_rate"
-        />
-      </div>
-
-      <div>
-        <label for="linear_regression_train_b">Trained cost:</label>
-        <input
-          type="number"
-          id="linear_regression_train_cost"
-          value="0"
-          placeholder="trained_cost"
-        />
-      </div>
-    </div>
-
-    <div class="container">
-      <div id="linear_regression_cost_by_iteration_begin"></div>
-      <div id="linear_regression_cost_by_iteration_end"></div>
+      <div id="cost_function_fixed_w"></div>
+      <div id="cost_function_fixed_b"></div>
     </div>
 
     <script src="./index.js"></script>
